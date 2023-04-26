@@ -1,0 +1,30 @@
+spring:
+ datasource:
+   driver-class-name: org.postgresql.Driver
+   url: jdbc:postgresql://34.64.73.103:5432/postgres
+   username: postgres
+   password: 1234
+ thymeleaf:
+    suffix: .html
+    prefix: classpath:/templates/
+    cache: false
+    check-template-location: false
+ mvc:
+    hiddenmethod:
+      filter:
+        enabled: true
+server:
+ port: 8090
+ servlet:
+    encoding:
+      force: true
+
+#mybatis:
+#  type-aliases-package: com.ds.gw.domain
+#  mapper-locations: classpath:mapper/*.xml
+#  configuration:
+#   map-underscore-to-camel-case: true
+#   multiple-result-sets-enabled: false
+#   call-setters-on-nulls: true
+#   jdbc-type-for-null: varchar
+#   default-fetch-size: 500

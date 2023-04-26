@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<title>관리자 페이지</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link
+	href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css"
+	rel="stylesheet">
+<script
+	src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+<style type="text/css">
+table {
+	text-align: center;
+}
+
+input[type="checkbox"] {
+	background: #fbfbfb;
+}
+
+input[type="checkbox"]::before {
+	content: "\2713";
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	overflow: hidden;
+	transform: scale(0) translate(-50%, -50%);
+	line-height: 1;
+}
+
+input[type="checkbox"]:hover {
+	border-color: rgba(170, 170, 170, 0.5);
+}
+
+input[type="checkbox"]:checked {
+	background-color: #ff8955;
+	border-color: rgba(255, 255, 255, 0.3);
+	color: white;
+}
+
+input[type="checkbox"]:checked::before {
+	border-radius: 2px;
+	transform: scale(1) translate(-50%, -50%)
+}
+</style>
+</head>
+<body>
+	<nav class="navbar navbar-expand-sm"
+		style="background-color: #FFFFE0">
+		<div class="container-fluid">
+			<ul class="navbar-nav">
+				<li class="nav-item"><a class="nav-link" th:href="@{/}">index</a>
+				</li>
+				<li class="nav-item"><a class="nav-link" th:href="@{/user}">사용자페이지</a>
+				</li>
+				<li class="nav-item"><a class="nav-link" th:href="@{/admin}">관리자페이지</a>
+				</li>
+			</ul>
+		</div>
+	</nav>
+		
+		
+		
+		
+		
+	<form name="schform" id="schform" method="post" th:action="@{/admin}">
+		<div class="container mt-3">
+			<h2>관리자 페이지</h2>
+			<p></p>
+			<table class="table table-borderless">
+				<colgroup>
+					<col width="25%">
+					<col width="*">
+				</colgroup>
+				<tbody>
+					<tr>
+						<th>이름</th>
+						<td>
+							<div class="input-group">
+								<input type="text" class="form-control" placeholder="이름을 입력하세요"
+									name="schKey" id="schKey" th:value="${schKey}">
+							</div>
+						</td>
+						<td style="text-align: left;">
+							<button type="submit" class="btn btn-warning">검색</button>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</form>
+	<div class="d-flex mb-3">
+		<div class="p-3 flex-fill">
+			<table class="table table-bordered">
+				<colgroup>
+					<col width="29%">
+					<col width="29%">
+					<col width="29%">
+					<col width="*">
+				</colgroup>
+				<thead>
+					<tr>
+						<th>아이디</th>
+						<th>사원명</th>
+						<th>부서</th>
+						<th>승인여부</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr th:each="resultList:${result}">
+						<td><span th:text="${resultList.user_id}"></span></td>
+						<td><a href="admin_view.html"
+							th:href="@{/admin/{user_id}(schKey=${schKey},user_id=${resultList.user_id})}"
+							th:text="${resultList.user_nm}"></a></td>
+						<td><span th:text="${resultList.user_dept}"></span></td>
+						<td><span th:if="${resultList.user_aprv_yn=='N'}" th:text="승인요청"></span>
+							<span th:unless="${resultList.user_aprv_yn=='N'}" th:text="승인"></span></td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+		
+		
+		
+		
+		
+		<div class="p-3 flex-fill">
+			<form name="myform" id="myform" method="post" th:if="${view!=null}"
+				th:action="@{/admin/update/{user_id}(user_id=${view.user_id})}"
+				th:object="${view}">
+				<table class="table table-bordered">
+					<colgroup>
+						<col width="30%">
+						<col width="*">
+					</colgroup>
+					<tbody>
+						<tr>
+							<th>아이디</th>
+							<td>
+								<div class="input-group">
+									<span th:text="${view.user_id}"></span>
+								</div>
+							</td>
+						</tr>
+						<tr>
+							<th>사원명</th>
+							<td>
+								<div class="input-group">
+									<input type="text" class="form-control"
+										th:value="${view.user_nm}" name="user_nm" id="user_nm" required="required">
+								</div>
+							</td>
+						</tr>
+						<tr>
+							<th>이메일</th>
+							<td>
+								<div class="input-group">
+									<input type="email" class="form-control"
+										th:value="${view.user_eml_addr}" name="user_eml_addr"
+										id="user_eml_addr" required="required">
+								</div>
+							</td>
+						</tr>
+						<tr>
+							<th>부서</th>
+							<td>
+								<div class="input-group">
+									<select class="custom-select" name="user_dept_se_no">
+										<option th:each="dept:${deptList}"
+											th:value="${dept.dept_se_no}"
+											th:selected="${dept.dept_se_no}==${view.user_dept_se_no}"
+											th:utext="${dept.dept_nm}"></option>
+									</select>
+								</div>
+							</td>
+						</tr>
+						<tr>
+							<th>전화번호</th>
+							<td>
+								<div class="input-group">
+									<input type="tel" class="form-control"
+										th:value="${view.user_telno}" name="user_telno"
+										id="user_telno" required="required">
+								</div>
+							</td>
+						</tr>
+						<tr>
+							<th>주소</th>
+							<td>
+								<div class="input-group">
+									<input type="text" class="form-control"
+										th:value="${view.user_addr}" name="user_addr" id="user_addr" required="required">
+								</div>
+							</td>
+						</tr>
+						<tr>
+							<th>취미</th>
+							<td>
+								<div class="input-group">
+									<div th:each="hobby : ${hobList}"
+										class="form-check form-check-inline">
+										<input type="checkbox" name="lnkg_hobby_id" id="lnkg_hobby_id"
+											th:value="${hobby.hobby_id}"
+											th:checked="${#strings.contains(viewHob, hobby.hobby_id)}"
+											class="form-check-input"> <label
+											th:text="${hobby.hobby_nm}" id="hobby_nm"
+											class="form-check-label"></label>&ensp;
+									</div>
+								</div>
+							</td>
+						</tr>
+						<tr>
+							<th>승인여부</th>
+							<td>
+								<div class="input-group">
+									<span th:if="${view.user_aprv_yn=='N'}" th:text="승인요청"></span>
+									<span th:unless="${view.user_aprv_yn=='N'}" th:text="승인"></span>
+								</div>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+				<div style="text-align: right;">
+					<button type="submit" class="btn btn-warning">저장</button>
+					<button type="button" class="btn btn-warning"
+						th:onclick="|location.href='@{/admin/delete/{user_id}(user_id=${view.user_id})}'|">삭제</button>
+					<button type="button" class="btn btn-warning"
+						th:onclick="|location.href='@{/admin}'|">목록</button>
+				</div>
+			</form>
+		</div>
+	</div>
+</body>
+
+</html>
