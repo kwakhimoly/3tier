@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-config.dtd">
+
+<configuration>
+
+<!--  원래 클래스명은 패키지까지 포함하기때문에 너무 길어서 짧은 
+          별명을 만들어서 접근하기 위해 기술한다  -->
+	<typeAliases> 
+		<typeAlias alias="UserDto" type="com.ds.gw.domain.UserDto"/> 	
+		<typeAlias alias="DeptDto" type="com.ds.gw.domain.DeptDto"/> 	
+		<typeAlias alias="HobbyDto" type="com.ds.gw.domain.HobbyDto"/> 	
+		<typeAlias alias="LnkgDto" type="com.ds.gw.domain.LnkgDto"/> 	
+	</typeAliases>
+
+	<mappers>
+	   <!--  sql 쿼리를 두는 곳  Guestbook.xml 파일을 만들어야 한다  -->
+	  <!--  src/main/resources 폴더에 두자 -->
+	  <mapper resource=	"mapper/User.xml" />
+	  <mapper resource=	"mapper/Dept.xml" />
+	  <mapper resource=	"mapper/Hobby.xml" />
+	  <mapper resource=	"mapper/Lnkg.xml" />
+	</mappers>
+	
+</configuration>
+
+
+

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="Lnkg">
+
+    <select id="Lnkg_getList" parameterType="LnkgDto" resultType="LnkgDto">
+        SELECT lnkg_hobby_id, 
+        	   lnkg_user_id as user_id
+		FROM public.lnkg_hobby
+		WHERE lnkg_user_id=#{user_id}
+    </select>
+    
+	<insert id="Lnkg_insert" parameterType="LnkgDto">
+		INSERT INTO public.lnkg_hobby(
+			lnkg_hobby_id,
+			lnkg_user_id)
+		VALUES (#{lnkg_hobby_id}, #{user_id})
+	</insert>
+	
+	<update id="Lnkg_update" parameterType="LnkgDto">
+		UPDATE public.lnkg_hobby
+		SET lnkg_user_id=#{user_id}, lnkg_hobby_id=#{lnkg_hobby_id}
+		WHERE lnkg_user_id=#{user_id} and lnkg_hobby_id=#{lnkg_hobby_id}
+	</update>
+	
+	<delete id="Lnkg_reset" parameterType="LnkgDto">
+	DELETE FROM public.lnkg_hobby
+	WHERE lnkg_user_id=#{user_id}
+	</delete>
+	
+</mapper>

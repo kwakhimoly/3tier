@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 
+    [템플릿 설명]  
+    - 해당 파일은 SQL 문을 작성하는 곳입니다.
+-->
+<mapper namespace="Dept">
+
+    <select id="Dept_getList" parameterType="DeptDto" resultType="DeptDto">
+        SELECT dept_se_no,
+        	   dept_nm,
+        	   dept_up_cd_id
+        FROM public.dept
+        ORDER BY dept_up_cd_id
+    </select>
+
+
+</mapper>

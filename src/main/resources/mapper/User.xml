@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="User">
+
+	<select id="User_getList" parameterType="UserDto" resultType="UserDto">
+		SELECT
+			a.user_id,
+			a.user_nm,
+			a.user_dept_se_no,
+			b.dept_nm as user_dept,
+			a.user_telno,
+			a.user_eml_addr,
+			a.user_addr,
+			a.user_aprv_yn
+		FROM public."user" A
+		LEFT JOIN public.dept B 
+		ON A.user_dept_se_no = B.dept_se_no
+		WHERE a.user_nm like '%'||#{schKey}||'%'
+		ORDER BY a.user_aprv_yn
+	</select>
+
+
+	<insert id="User_insert" parameterType="UserDto">
+		INSERT INTO
+		public."user"(
+				user_id,
+				user_nm,
+				user_dept_se_no,
+				user_eml_addr,
+				user_telno,
+				user_addr)
+		VALUES (
+				#{user_id},
+				#{user_nm},
+				#{user_dept_se_no},
+				#{user_eml_addr},
+				#{user_telno},
+				#{user_addr})
+	</insert>
+
+	<select id="User_getView" parameterType="UserDto" resultType="UserDto">
+		SELECT
+			a.user_id,
+			a.user_nm,
+			a.user_dept_se_no,
+			b.dept_nm as user_dept,
+			a.user_telno,
+			a.user_eml_addr,
+			a.user_addr,
+			a.user_aprv_yn
+		FROM public."user" A
+		LEFT JOIN public.dept B 
+		ON A.user_dept_se_no = B.dept_se_no
+		WHERE user_id=#{user_id}
+	</select>
+	
+	<update id="User_update" parameterType="UserDto">
+		UPDATE public."user"
+		SET user_nm=#{user_nm}
+			, user_dept_se_no=#{user_dept_se_no}
+			, user_eml_addr=#{user_eml_addr}
+			, user_telno=#{user_telno}
+			, user_addr=#{user_addr}
+			, user_aprv_yn='Y'
+		WHERE user_id = #{user_id}
+	</update>
+	
+	<delete id="User_delete" parameterType="UserDto">
+		DELETE FROM public."user"
+		WHERE user_id = #{user_id}
+	</delete>
+	
+	<select id="User_findById" parameterType="UserDto" resultType="Integer">
+		SELECT count(*)
+		FROM public."user"
+		WHERE user_id=#{user_id}
+	</select>
+</mapper>
