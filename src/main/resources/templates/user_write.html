@@ -20,12 +20,12 @@ $(()=>{
 		let data = {user_id:$("#user_id_checked").val()}
 		
 		$.ajax(({
-			url:"./user/idcheck",
+			url:"/user/idcheck",
 			data:data,
 			type:"POST"
 		}))
 		.done((res)=>{
-			if(res.result==0){
+			if(res.result){
 				let user_id_fin = $("#user_id_checked").val();
 				alert("사용 가능한 아이디입니다.");
 				$("#user_id_checked").prop("readOnly", true);

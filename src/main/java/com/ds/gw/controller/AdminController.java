@@ -1,13 +1,18 @@
 package com.ds.gw.controller;
 
+import java.net.URI;
 import java.util.List;
 
 import javax.annotation.Resource;
 
+import org.apache.ibatis.type.TypeReference;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import com.ds.gw.domain.DeptDto;
 import com.ds.gw.domain.HobbyDto;
@@ -20,89 +25,73 @@ import com.ds.gw.service.UserService;
 
 @Controller
 public class AdminController {
-	@Resource(name = "userService")
-	UserService user_service;
 
-	@Resource(name = "deptService")
-	DeptService dept_service;
-
-	@Resource(name = "hobbyService")
-	HobbyService hob_service;
-
-	@Resource(name = "lnkgService")
-	LnkgService lnkg_service;
+	private final RestTemplate restTemplate = new RestTemplate();
 	
+
+	@SuppressWarnings("unchecked")
 	@RequestMapping("/admin")
-	public String getList(DeptDto dept_dto, HobbyDto hob_dto, UserDto dto, Model model) {
-		List<UserDto> resultList = user_service.getList(dto);
+	public String getList(Model model) {
+		List<UserDto> resultList = restTemplate.getForObject("http://localhost:8090/api/userList", List.class);
 		model.addAttribute("result", resultList);
 		
-		List<DeptDto> deptList = dept_service.getList(dept_dto);
+		List<DeptDto> deptList = restTemplate.getForObject("http://localhost:8090/api/deptList", List.class);
 		model.addAttribute("deptList", deptList);
 		
-		List<HobbyDto> hobList = hob_service.getList(hob_dto);
-		model.addAttribute("hobList", hobList);
-		
-		model.addAttribute("schKey", dto.getSchKey());
+		String schkey = restTemplate.getForObject("http://localhost:8090/api/schkey", String.class);
+		model.addAttribute("schKey", schkey);
 		
 		return "admin";
 	}
 
+	@SuppressWarnings("unchecked")
 	@RequestMapping("/admin/{user_id}")
-	public String getView(@PathVariable String user_id, Model model, DeptDto dept_dto, HobbyDto hob_dto, UserDto dto) {
-		model.addAttribute("schKey", dto.getSchKey());
-	
-		List<UserDto> resultList = user_service.getList(dto);		
+	public String getView(@PathVariable String user_id, Model model) {
+		List<UserDto> resultList = restTemplate.getForObject("http://localhost:8090/api/userList", List.class);
 		model.addAttribute("result", resultList);
-
-		List<DeptDto> deptList = dept_service.getList(dept_dto);
+		
+		List<DeptDto> deptList = restTemplate.getForObject("http://localhost:8090/api/deptList", List.class);
 		model.addAttribute("deptList", deptList);
 		
-		List<HobbyDto> hobList = hob_service.getList(hob_dto);
-		model.addAttribute("hobList", hobList);
+		String schkey = restTemplate.getForObject("http://localhost:8090/api/schkey", String.class);
+		model.addAttribute("schKey", schkey);
 		
-		UserDto viewdto = user_service.getView(user_id);
+		URI uri = UriComponentsBuilder
+				.fromUriString("http://localhost:8090")
+				.path("/api/view/user")
+				.queryParam("user_id", user_id)
+				.encode()
+				.build()
+				.toUri();
+				
+		UserDto viewdto = restTemplate.getForObject(uri, UserDto.class);
 		model.addAttribute("view", viewdto);
 
-
-		List<LnkgDto> lnkgList = lnkg_service.getList(user_id);
+		List<HobbyDto> hobList = restTemplate.getForObject("http://localhost:8090/api/hobList", List.class);
+		model.addAttribute("hobList", hobList);
+	
+		
+		List<LnkgDto> lnkgList = (List<LnkgDto>) restTemplate.getForObject("http://localhost:8090/api/view/hobby", List.class);
 		StringBuffer user_hobby = new StringBuffer();
-
 		for (int i = 0; i < lnkgList.size(); i++) {
 			user_hobby.append(lnkgList.get(i).getLnkg_hobby_id());
+			System.out.println(user_hobby);
 		}
 		model.addAttribute("viewHob", user_hobby);
-
 		return "admin";
 	}
 
-	
+
 	@RequestMapping("/admin/delete/{user_id}")
 	public String delete(@PathVariable String user_id) {
-		user_service.delete(user_id);
+		restTemplate.delete("http://localhost:8090/api/delete/{user_id}", user_id);
 		return "redirect:/admin";
 	}
 
 	@RequestMapping("/admin/update/{user_id}")
 	public String update(@PathVariable String user_id, UserDto uDto, LnkgDto lDto, Model model) {
-		user_service.update(uDto);
-		lnkg_service.reset(lDto);
-		
-		if(lDto.getLnkg_hobby_id().equals("")) {
-			lDto.setLnkg_hobby_id("Z00");
-		} else if(lDto.getLnkg_hobby_id().contains("Z00")) {
-			lDto.setLnkg_hobby_id("Z00");
-		}
-		
-		if (lDto.getLnkg_hobby_id().contains(",")) {
-			String[] hobby_list = lDto.getLnkg_hobby_id().split(",");
-			for (int i = 0; i < hobby_list.length; i++) {
-				lDto.setLnkg_hobby_id(hobby_list[i]);
-				lnkg_service.insert(lDto);
-			}
-		} else {
-			lnkg_service.insert(lDto);
-		}
+		restTemplate.postForEntity("http://localhost:8090/api/user/update", uDto, UserDto.class);
+//		restTemplate.delete("http://localhost:8090/api/deleteHob/{user_id}", user_id);
 
 		return "redirect:/admin/{user_id}";
 	}
