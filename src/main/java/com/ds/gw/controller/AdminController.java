@@ -3,10 +3,6 @@ package com.ds.gw.controller;
 import java.net.URI;
 import java.util.List;
 
-import javax.annotation.Resource;
-
-import org.apache.ibatis.type.TypeReference;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -18,10 +14,8 @@ import com.ds.gw.domain.DeptDto;
 import com.ds.gw.domain.HobbyDto;
 import com.ds.gw.domain.LnkgDto;
 import com.ds.gw.domain.UserDto;
-import com.ds.gw.service.DeptService;
-import com.ds.gw.service.HobbyService;
-import com.ds.gw.service.LnkgService;
-import com.ds.gw.service.UserService;
+
+
 
 @Controller
 public class AdminController {
@@ -31,31 +25,34 @@ public class AdminController {
 
 	@SuppressWarnings("unchecked")
 	@RequestMapping("/admin")
-	public String getList(Model model) {
-		List<UserDto> resultList = restTemplate.getForObject("http://localhost:8090/api/userList", List.class);
+	public String getList(Model model, UserDto dto) {
+		String schkey = dto.getSchKey();
+		model.addAttribute("schKey", schkey);
+		
+		String url = "http://localhost:8090/api/userList?schKey="+schkey;
+		List<UserDto> resultList = restTemplate.getForObject(url, List.class);
 		model.addAttribute("result", resultList);
 		
 		List<DeptDto> deptList = restTemplate.getForObject("http://localhost:8090/api/deptList", List.class);
 		model.addAttribute("deptList", deptList);
 		
-		String schkey = restTemplate.getForObject("http://localhost:8090/api/schkey", String.class);
-		model.addAttribute("schKey", schkey);
 		
 		return "admin";
 	}
 
 	@SuppressWarnings("unchecked")
 	@RequestMapping("/admin/{user_id}")
-	public String getView(@PathVariable String user_id, Model model) {
-		List<UserDto> resultList = restTemplate.getForObject("http://localhost:8090/api/userList", List.class);
+	public String getView(@PathVariable String user_id, UserDto dto, Model model) {
+		String schkey = dto.getSchKey();
+		model.addAttribute("schKey", schkey);
+		
+		String schurl = "http://localhost:8090/api/userList?schKey="+schkey;
+		List<UserDto> resultList = restTemplate.getForObject(schurl, List.class);
 		model.addAttribute("result", resultList);
 		
 		List<DeptDto> deptList = restTemplate.getForObject("http://localhost:8090/api/deptList", List.class);
 		model.addAttribute("deptList", deptList);
-		
-		String schkey = restTemplate.getForObject("http://localhost:8090/api/schkey", String.class);
-		model.addAttribute("schKey", schkey);
-		
+
 		URI uri = UriComponentsBuilder
 				.fromUriString("http://localhost:8090")
 				.path("/api/view/user")
@@ -69,14 +66,9 @@ public class AdminController {
 
 		List<HobbyDto> hobList = restTemplate.getForObject("http://localhost:8090/api/hobList", List.class);
 		model.addAttribute("hobList", hobList);
-	
 		
-		List<LnkgDto> lnkgList = (List<LnkgDto>) restTemplate.getForObject("http://localhost:8090/api/view/hobby", List.class);
-		StringBuffer user_hobby = new StringBuffer();
-		for (int i = 0; i < lnkgList.size(); i++) {
-			user_hobby.append(lnkgList.get(i).getLnkg_hobby_id());
-			System.out.println(user_hobby);
-		}
+		String hoburl = "http://localhost:8090/api/view/hobby?user_id="+user_id;
+		String user_hobby = restTemplate.getForObject(hoburl, String.class);
 		model.addAttribute("viewHob", user_hobby);
 		return "admin";
 	}
@@ -91,8 +83,9 @@ public class AdminController {
 	@RequestMapping("/admin/update/{user_id}")
 	public String update(@PathVariable String user_id, UserDto uDto, LnkgDto lDto, Model model) {
 		restTemplate.postForEntity("http://localhost:8090/api/user/update", uDto, UserDto.class);
-//		restTemplate.delete("http://localhost:8090/api/deleteHob/{user_id}", user_id);
-
+		restTemplate.delete("http://localhost:8090/api/deleteHob/{user_id}", user_id);
+		restTemplate.postForEntity("http://localhost:8090/api/hobby/save", lDto, LnkgDto.class);
+		
 		return "redirect:/admin/{user_id}";
 	}
 }
