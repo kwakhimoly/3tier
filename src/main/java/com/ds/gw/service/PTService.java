@@ -1,11 +1,9 @@
 package com.ds.gw.service;
 
-import java.net.URI;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.util.UriComponentsBuilder;
 
 import com.ds.gw.domain.DeptDto;
 import com.ds.gw.domain.HobbyDto;
@@ -51,13 +49,7 @@ public class PTService {
 
 	public UserDto getViewDto(String user_id) {
 
-		URI uri = UriComponentsBuilder
-				.fromUriString(bturl)
-				.path("/view/user")
-				.queryParam("user_id", user_id)
-				.encode()
-				.build()
-				.toUri();
+		String uri = bturl+"/view/user/"+user_id;
 				
 		UserDto viewdto = restTemplate.getForObject(uri, UserDto.class);
 
