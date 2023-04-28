@@ -18,7 +18,7 @@ repositories {
 	mavenCentral()
 }
 
-bootBuildImage { imageName = "groupware" }
+bootBuildImage { imageName = "groupwarept" }
 
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
