@@ -1,7 +1,7 @@
 spring:
  datasource:
    driver-class-name: org.postgresql.Driver
-   url: jdbc:postgresql://34.64.126.5:5432/postgres
+   url: jdbc:postgresql://34.64.205.117:5432/postgres
    username: postgres
    password: kwak1234
  thymeleaf:
