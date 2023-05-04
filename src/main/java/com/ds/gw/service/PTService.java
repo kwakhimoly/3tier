@@ -49,6 +49,8 @@ public class PTService {
 
 	public UserDto getViewDto(String user_id) {
 
+
+		
 		String uri = bturl+"/view/user/"+user_id;
 				
 		UserDto viewdto = restTemplate.getForObject(uri, UserDto.class);
